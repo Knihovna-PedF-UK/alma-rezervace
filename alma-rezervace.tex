@@ -1,0 +1,253 @@
+\documentclass[a4paper,landscape]{article}
+\usepackage{fontspec,luacode}
+\setmainfont{Fira Sans}
+\setmonofont{Fira Sans}
+\usepackage[code=Code39,X=.35mm,ratio=2.15,H=1cm]{makebarcode}
+\usepackage{ncccropbox}
+\usepackage{url}
+\usepackage{qrcode}
+\usepackage[margin=0.5cm]{geometry}
+\usepackage{uklogo}
+\parindent=0pt
+\pagestyle{empty}
+\newcommand\objednavka[9]{%
+  \cropbox[72mm][198mm]{%
+    \begin{minipage}{64mm}%
+      \vtop to 190mm{%
+        \vspace{2mm}
+        {\huge\bfseries\raggedright #1}\\%
+        \medskip\\
+        \textbf{ID Objednávky}:\\ #7\\%
+        \textbf{ID uživatele}:\\ #8\\%
+        \textbf{ČK uživatele}:\\#2\\%
+        \textbf{E-mail}: \\ \url{#5}\\%
+        \textbf{Telefon}: \\ \texttt{#4}\\%
+        \textbf{Čas objednávky}: \\ #3\\%
+        \smallskip
+        % \\ ~ \\
+        {\small\barcode{#2}}\\%
+        \smallskip
+        % \\ ~ \\
+	    \textbf{Signatury:}\\[6pt]%
+        #6%
+        \\ ~ \\
+        \vfill
+        \textbf{Poznámky}: #9\\[1em]
+        \uklogo[32pt]
+        %\qrcode{#1:#5:#9:#7:#8}
+        \vspace{0mm}
+      }
+    \end{minipage}
+  }\allowbreak%
+}%
+\begin{luacode*}
+local tsvtext = [[
+
+]]
+
+local requested   = "Požadováno pro"
+local callno      = "Signatura jednotky"
+local requesttime = "Datum procesu"
+local title       = "Titul"
+local comment     = "Poznámka k požadavku"
+local requestid   = "ID požadavku"
+
+
+
+local function getlines(text)
+  local lines = {}
+  -- this is due to some catcode clash
+  text = text:gsub("\\r", "\n")
+  for line in text:gmatch("([^\n]+)") do 
+    print(line)
+    lines[#lines+1] = line 
+  end
+  return lines
+end
+
+local function tabseparate(line) 
+  local fields = {}
+  for field in line:gmatch("([^\t]*)") do fields[#fields+1] = field end
+  return fields
+end
+
+local function getcolumnhaders(line)
+  local headers = {}
+  local fields = tabseparate(line)
+  if #fields == 0 then return nil, "Cannot parse column headers" end
+  for i, name in ipairs(fields) do 
+    headers[i] = name 
+  end
+  return headers
+end
+
+
+local function loadtsv(text)
+  local records = {}
+  local lines = getlines(text)
+  if #lines == 0 then return nil, "Cannot find lines" end
+  -- try to get column names
+  local headers, msg = getcolumnhaders(lines[1])
+  if not headers then return nil, msg end
+  -- parse rest of lines
+  for i = 2, #lines do
+    local fields = tabseparate(lines[i])
+    if #fields > 0 then
+      -- save  TSV fields in record under column name
+      local rec = {}
+      for k,value in ipairs(fields) do 
+        local name = headers[k]
+        -- 
+        if name then rec[name] = value end
+      end
+      records[#records+1] = rec
+    end
+  end
+  return records
+end
+
+local function createperson(rec)
+  local newrecord = {}
+  newrecord.name = rec[requested]
+  newrecord.requests = {}
+  return newrecord
+end
+
+local function shorten(text, length)
+  local t = {}
+  local i = 0
+  for p, c in utf8.codes(text) do
+    i = i + 1
+    if i <= length then
+      t[#t+1] = utf8.char(c) 
+    else 
+      break
+    end
+  end
+  return table.concat(t)
+end
+
+local function firstcallno(text)
+  local first = text:match("^([^%,]+)")
+  return first
+end
+
+local function processrequest(newrecord, rec)
+  local request = {}
+  -- get only short title, to fit on paper
+  request.title     = shorten(rec[title], 35)
+  -- there are multiple call numbers separated by comma, use just first one
+  request.callno    = firstcallno(rec[callno])
+  request.time      = rec[requesttime]
+  request.comment   = rec[comment]
+  request.requestid = rec[requestid]
+  table.insert(newrecord.requests, request)
+end
+
+local function getcomments(rec)
+  -- get comments from requests, remove duplicates and save them as rec.comments
+  local comments = {}
+  local used = {}
+  for i, request in ipairs(rec.requests) do
+    local comment = request.comment
+    if not used[comment] and comment ~= "" then
+      comments[#comments+1] = comment
+    end
+    used[comment] = true
+  end
+  rec.comments = table.concat(comments, ",")
+end
+
+local function getrequestdate(rec)
+  --- get request times, sort them alphabetically and return the first entry -- it is the earliest time
+  local times = {}
+  for i, request in ipairs(rec.requests) do
+    times[#times+1] = request.time
+  end
+  table.sort(times)
+  rec.time = times[1]
+end
+
+
+local function countduplicates(records)
+  -- mark books that are requested multiple times
+  local callnos = {}
+  -- count number of repetitions of each callno
+  for name, rec in pairs(records) do
+    for i, req in ipairs(rec.requests) do
+      local callno = req.callno
+      local c = callnos[callno]  or 0
+      c = c + 1
+      callnos[callno] = c
+    end
+  end
+  -- mark duplicate callnos 
+  for _, rec in pairs(records) do
+    for _, req in ipairs(rec.requests) do
+      local callno = req.callno
+      if callnos[callno] > 1 then 
+        req.duplicate = true
+      else
+        req.duplicate = false
+      end
+    end
+  end
+end
+
+
+
+local function processrecords(records)
+  local newrecords = {}
+  -- join records by requesting person
+  for _, rec in ipairs(records) do
+    local name = rec[requested]
+    local newrecord = newrecords[name] or createperson(rec)
+    -- add request to newrecord
+    processrequest(newrecord, rec)
+    newrecords[name] = newrecord
+  end
+  -- clean up new records -- remove duplicate comments and get earliest request date
+  for _, rec in pairs(newrecords) do
+    getcomments(rec)
+    getrequestdate(rec)
+  end
+  -- mark duplicate requests - books requested by multiple users
+  countduplicates(newrecords)
+  return newrecords
+end
+
+
+local function printrecords(records)
+  for _, rec in pairs(records) do
+    tex.sprint(rec.name)
+  end
+end
+
+function convert(tsvtext)
+  -- load records from a tab separetd string
+  local records   = loadtsv(tsvtext)
+  -- transform records to requests
+  local processed = processrecords(records)
+  printrecords(processed)
+end
+\end{luacode*}
+\begin{document}
+
+Hello world
+
+\begingroup
+% handle tabs and newlines
+\catcode`\^^I=13 %
+\catcode`\^^M=13 %
+\newcommand\process[1]{%
+  \directlua{convert([[\luaescapestring{\detokenize{#1}}]])}
+}
+\process{Titul	Umístění	Signatura	Přírůstkové číslo holdingu	Autor	ISBN	ISSN	Vydání	Tiráž	Vydavatel	Datum vydání	Typ požadavku	Požadováno pro	ID požadavku	Čárový kód	Popis	Svazek	Vydání	Kapitola/článek	Strany	Místo vyzvednutí	Signatura jednotky	Druh dokumentu	Poznámka k požadavku	Kódy kurzů	ID umístění úložiště	ID žádosti o sdílení dokumentu	Svazek sdílení dokumentů	Skupina uživatelů žadatele	Datum procesu
+Rámcový vzdělávací program pro základní vzdělávání s přílohou upravující vzdělávání žáků s lehkým mentálním postižením / [celková gesce přípravy dokumentu Jaroslav Jeřábek, Jan Tupý ; autoři jednotlivých částí Jan Balada ... et al.]	Rett-depository (KRD5)			Výzkumný ústav pedagogický v Praze	80-87000-02-1			Praha : Výzkumný ústav pedagogický, 2005	Výzkumný ústav pedagogický,	2005	Patron physical item request	Vrbová, Zuzana	10219150150006986	2592070671,2592070663,2592070664,2592070672						Pedagogická fakulta - M. Rettigové	H2287v,H2287m,H2287n,H2287w	Kniha						11 - Zaměstnanec	16/11/2021 09:26:26 CET
+Ruský jazyk v kostce : [konverzační témata, reálie] / Radka Hříbková, Antonín Hlaváček	Rett-depository (KRD5)			Hříbková, Radka,	80-7200-893-5		1. vyd.	Havlíčkův Brod : Fragment, 2004	Fragment,	2004	Patron physical item request	Vrbová, Zuzana	10219143660006986	2592042189,2592063228,2592063230,2592063232,2592063231,2592042188						Pedagogická fakulta - M. Rettigové	H2165a,H2165c,H2165e,H2165g,H2165f,H2165	Kniha	do boxu					11 - Zaměstnanec	16/11/2021 09:22:34 CET
+Opera pro děti / Ivana Ašenbrenerová	Rett-depository (KRD5)			Ašenbrenerová, Ivana,	80-7044-570-X		Vyd. 1.	Ústí nad Labem : Univerzita JE Purkyně, 2004	Univerzita JE Purkyně,	2004	Patron physical item request	Maršíčková, Zuzana	10219149530006986	2592050318,2592052662,2592052661,2592050319						Pedagogická fakulta - M. Rettigové	H2183a,H2183d,H2183c,H2183b	Kniha						11 - Zaměstnanec	16/11/2021 09:25:48 CET
+Opera pro děti / Ivana Ašenbrenerová	Rett-depository (KRD5)			Ašenbrenerová, Ivana,	80-7044-570-X		Vyd. 1.	Ústí nad Labem : Univerzita JE Purkyně, 2004	Univerzita JE Purkyně,	2004	Patron physical item request	Hoftich, Michal	10219148470006986	2592050318,2592052662,2592052661,2592050319						Pedagogická fakulta - M. Rettigové	H2183a,H2183d,H2183c,H2183b	Kniha						11 - Zaměstnanec	16/11/2021 09:25:22 CET
+}
+\endgroup
+
+\end{document}
