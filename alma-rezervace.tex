@@ -10,36 +10,6 @@
 \usepackage{uklogo}
 \parindent=0pt
 \pagestyle{empty}
-\newcommand\objednavka[9]{%
-  \cropbox[72mm][198mm]{%
-    \begin{minipage}{64mm}%
-      \vtop to 190mm{%
-        \vspace{2mm}
-        {\huge\bfseries\raggedright #1}\\%
-        \medskip\\
-        \textbf{ID Objednávky}:\\ #7\\%
-        \textbf{ID uživatele}:\\ #8\\%
-        \textbf{ČK uživatele}:\\#2\\%
-        \textbf{E-mail}: \\ \url{#5}\\%
-        \textbf{Telefon}: \\ \texttt{#4}\\%
-        \textbf{Čas objednávky}: \\ #3\\%
-        \smallskip
-        % \\ ~ \\
-        {\small\barcode{#2}}\\%
-        \smallskip
-        % \\ ~ \\
-	    \textbf{Signatury:}\\[6pt]%
-        #6%
-        \\ ~ \\
-        \vfill
-        \textbf{Poznámky}: #9\\[1em]
-        \uklogo[32pt]
-        %\qrcode{#1:#5:#9:#7:#8}
-        \vspace{0mm}
-      }
-    \end{minipage}
-  }\allowbreak%
-}%
 
 \newcommand\rezervace[1]{%%
 \cropbox[72mm][198mm]{%
@@ -144,7 +114,7 @@ end
 local function processrequest(newrecord, rec)
   local request = {}
   -- get only short title, to fit on paper
-  request.title     = shorten(rec[title], 35)
+  request.title     = shorten(rec[title], 25)
   -- there are multiple call numbers separated by comma, use just first one
   request.callno    = firstcallno(rec[callno])
   request.time      = rec[requesttime]
@@ -246,14 +216,34 @@ end
 
 local command_template = "\\rezervace{%s}"
 local function printrecords(records)
+  local t = {}
+  local function add_text(text)
+    t[#t+1] = text 
+  end
+  local function print_line(text) 
+    add_text(text)
+    add_text("\\\\")
+  end 
+  local function smallskip() t[#t+1] = "\\smallskip " end
+  local function bigskip() t[#t+1] = "\\bigskip " end
   for _, rec in pairs(records) do
-    local t = {}
-    t[#t+1] = rec.name
-    t[#t+1] = "\\\\"
+    t = {}
+    add_text("\\section*{" .. rec.name .. "}")
+    print_line("\\textbf{Datum a čas}")
+    bigskip()
+    print_line(rec.time)
+    if rec.comments ~= "" then
+      add_text("\\hrule")
+      print_line("\\textbf{Komentáře}")
+      print_line(rec.comments)
+      add_text("\\hrule")
+    end
     for k, req in ipairs(rec.requests) do
-      t[#t+1] = req.callno .. "\\\\\\bigskip "
+      smallskip()
+      print_line(req.callno .. " -- " .. req.title)
       if req.duplicate then
-        t[#t+1] = "\\barcode{" .. req.requestid .. "}\\\\\\bigskip "
+        bigskip()
+        print_line("\\barcode{" .. req.requestid .. "}")
       end
     end
     tex.sprint(string.format(command_template, table.concat(t)))
@@ -269,8 +259,6 @@ function convert(tsvtext)
 end
 \end{luacode*}
 \begin{document}
-
-Hello world
 
 \begingroup
 % handle tabs and newlines
