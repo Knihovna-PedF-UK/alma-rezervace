@@ -42,12 +42,12 @@
 }%
 
 \newcommand\rezervace[1]{%%
-\cropbox[72mm][198mm]{
-\begin{minipage}[t][190mm]{64mm}
-#1
-\end{minipage}
-}
-}
+\cropbox[72mm][198mm]{%
+\begin{minipage}[t][190mm]{64mm}%
+#1%
+\end{minipage}%
+}%
+}%
 
 \begin{luacode*}
 local tsvtext = [[
@@ -203,6 +203,23 @@ local function countduplicates(records)
   end
 end
 
+local function sortrequests(rec)
+  -- sort call numbers
+  table.sort(rec.requests, function(a,b) 
+  local siga = a.callno or ""
+  local sigb = b.callno or ""
+   -- signatura může být 2H222, nebo F12222
+   local pattern = "(2?%a+)(.+)"
+   local starta, resta = siga:match(pattern)
+   local startb, restb = sigb:match(pattern)
+   if starta==startb then
+     -- compare numbers if starting letters are same
+     return resta < restb 
+   end
+   -- compare starting letters if they are different
+   return starta < startb
+  end)
+end
 
 
 local function processrecords(records)
@@ -219,6 +236,7 @@ local function processrecords(records)
   for _, rec in pairs(newrecords) do
     getcomments(rec)
     getrequestdate(rec)
+    sortrequests(rec)
   end
   -- mark duplicate requests - books requested by multiple users
   countduplicates(newrecords)
@@ -233,7 +251,10 @@ local function printrecords(records)
     t[#t+1] = rec.name
     t[#t+1] = "\\\\"
     for k, req in ipairs(rec.requests) do
-      t[#t+1] = "\\barcode{" .. req.requestid .. "}\\\\\\bigskip"
+      t[#t+1] = req.callno .. "\\\\\\bigskip "
+      if req.duplicate then
+        t[#t+1] = "\\barcode{" .. req.requestid .. "}\\\\\\bigskip "
+      end
     end
     tex.sprint(string.format(command_template, table.concat(t)))
   end
