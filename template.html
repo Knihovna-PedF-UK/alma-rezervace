@@ -38,25 +38,11 @@
       <input type="submit" value="Vytvořit PDF" />
     </form>
 
-    <h1 id="navod">Návod na export z Woocommerce</h1>
-    <p>V administračním rozhraní Wordpressu vyberte menu <samp>WooCommerce -&gt; Export Orders</samp>. Zde zvolte následující možnosti:</p>
-    <ul>
-      <li>Format: JSON</li>
-      <li>Order statuses: odstraňte <q>Dokončeno</q></li>
-    </ul>
-    <figure>
-      <figcaption>Rozhraní exportu</figcaption>
-      <img src="woocommerce-export.png" alt="rozhraní exportu z Woocommerce" />
-    </figure>
-    <p>Export provedete zvolením tlačítka <q>Preview</q>. Zobrazí se textové pole s
-    kódem jako na následujícím obrázku. Ten zkopírujte a vložte do <a href="#input">textového
-      pole na této stránce</a>. Stiskněte tlačítko <q>Vytvořit PDF</q> a zobrazí se
-    vygenerované objednávkové lístky.</p>
-    <p>Pokud je objednávek víc, než 5, je třeba zvolit správnou velikost <b>Preview size</b>.</p>
-    <figure>
-      <figcaption>JSON kód ke zkopírování</figcaption>
-      <img src="woocommerce-json.png" alt="Vyexportovaný JSON">
-    </figure>
+    <h1 id="navod">Návod na export z Almy</h1>
+    <p>V Almě, v horní liště vyberte <i>Úkoly vyžadující vaší pozornost</i> (zápisníček s fajfkou). Tam zvolte <i>Vyzvednutí z police</i>. Vpravo nahoře je tlačítko <i>Vytisknout zprávu o knižním lístku</i>. To zmáčkněte.</p>
+    <p><img src="img/vytisknoutzpravu.png" /></p>
+    <p>Ve formuláři, který se objeví, musíte zvolit: Typ = Tiskárna, Typ formátu = Excel, Tiskárna = PedF Rettigové, nebo PedF Celetná. Pak klikněte na stáhnout.</p>
+    <p>Otevřete exelovský soubor a zkopírujte jeho celý obsah do tohoto formuláře a klikněte na <i>Vytvořit PDF</i></p>
     <!-- formulář užívaný pro kompilaci do PDF -->
     <form style="display:none" id="form2-pre" 
       name="form2-pre" enctype="multipart/form-data" 
