@@ -1,13 +1,12 @@
 \documentclass[a4paper,landscape]{article}
 \usepackage{fontspec,luacode}
-\setmainfont{Fira Sans}
-\setmonofont{Fira Sans}
+\setmainfont{TeX Gyre Heros}
+\setmonofont{TeX Gyre Heros}
 \usepackage[code=Code39,X=.25mm,ratio=2.15,H=0.7cm]{makebarcode}
 \usepackage{ncccropbox}
 \usepackage{url}
 \usepackage{qrcode}
 \usepackage[margin=0.5cm]{geometry}
-\usepackage{uklogo}
 \parindent=0pt
 \pagestyle{empty}
 
@@ -267,17 +266,19 @@ end
 \newcommand\process[1]{%
   \directlua{convert([[\luaescapestring{\detokenize{#1}}]])}
 }
-\process{Titul	Umístění	Signatura	Přírůstkové číslo holdingu	Autor	ISBN	ISSN	Vydání	Tiráž	Vydavatel	Datum vydání	Typ požadavku	Požadováno pro	ID požadavku	Čárový kód	Popis	Svazek	Vydání	Kapitola/článek	Strany	Místo vyzvednutí	Signatura jednotky	Druh dokumentu	Poznámka k požadavku	Kódy kurzů	ID umístění úložiště	ID žádosti o sdílení dokumentu	Svazek sdílení dokumentů	Skupina uživatelů žadatele	Datum procesu
-Rámcový vzdělávací program pro základní vzdělávání s přílohou upravující vzdělávání žáků s lehkým mentálním postižením / [celková gesce přípravy dokumentu Jaroslav Jeřábek, Jan Tupý ; autoři jednotlivých částí Jan Balada ... et al.]	Rett-depository (KRD5)			Výzkumný ústav pedagogický v Praze	80-87000-02-1			Praha : Výzkumný ústav pedagogický, 2005	Výzkumný ústav pedagogický,	2005	Patron physical item request	Vrbová, Zuzana	10219150150006986	2592070671,2592070663,2592070664,2592070672						Pedagogická fakulta - M. Rettigové	H2287v,H2287m,H2287n,H2287w	Kniha						11 - Zaměstnanec	16/11/2021 09:26:26 CET
-Ruský jazyk v kostce : [konverzační témata, reálie] / Radka Hříbková, Antonín Hlaváček	Rett-depository (KRD5)			Hříbková, Radka,	80-7200-893-5		1. vyd.	Havlíčkův Brod : Fragment, 2004	Fragment,	2004	Patron physical item request	Vrbová, Zuzana	10219143660006986	2592042189,2592063228,2592063230,2592063232,2592063231,2592042188						Pedagogická fakulta - M. Rettigové	H2165a,H2165c,H2165e,H2165g,H2165f,H2165	Kniha	do boxu					11 - Zaměstnanec	16/11/2021 09:22:34 CET
-Historické zahrady v Čechách a na Moravě / Zdeněk Dokoupil ... [et al.]	Rett-depository (KRD5)			Dokoupil, Zdeněk,			1. vyd.	Praha : Nakladatelství československých výtvarných umělců, 1957	Nakladatelství československých výtvarných umělců,	1957	Patron physical item request	Špačková, Kateřina	10219972290006986	2595701920						Pedagogická fakulta - M. Rettigové	H84	Kniha						01 - Student	16/11/2021 12:36:54 CET
-Kmeny : současné městské subkultury / autoři projektu Vladimir 518, Karel Veselý ; fotografie Tomáš Souček	Rett-depository (KRD5)			Vladimir 518,	978-80-904735-3-9		1. vyd.	V Praze : Bigg Boss & Yinachi, 2011	Bigg Boss & Yinachi,	2011	Patron physical item request	Maršíčková, Zuzana	10219500570006986	2592130113,2592120666						Pedagogická fakulta - M. Rettigové	H3191a,H3191	Kniha						11 - Zaměstnanec	16/11/2021 10:43:29 CET
-Kmeny 0 : městské subkultury a nezávislé společenské proudy před rokem 1989 / Vladimir 518 a kolektiv	Rett-depository (KRD5)			Vladimir 518,	978-80-904735-4-6		1. vydání	V Praze : Bigg Boss & Yinachi, 2013	Bigg Boss & Yinachi,	2013	Patron physical item request	Maršíčková, Zuzana	10219502900006986	2592145282,2592141609						Pedagogická fakulta - M. Rettigové	H3651a,H3651	Kniha						11 - Zaměstnanec	16/11/2021 10:43:57 CET
-Opera pro děti / Ivana Ašenbrenerová	Rett-depository (KRD5)			Ašenbrenerová, Ivana,	80-7044-570-X		Vyd. 1.	Ústí nad Labem : Univerzita JE Purkyně, 2004	Univerzita JE Purkyně,	2004	Patron physical item request	Hoftich, Michal	10219148470006986	2592050318,2592052662,2592052661,2592050319						Pedagogická fakulta - M. Rettigové	H2183a,H2183d,H2183c,H2183b	Kniha						11 - Zaměstnanec	16/11/2021 09:25:22 CET
-Opera pro děti / Ivana Ašenbrenerová	Rett-depository (KRD5)			Ašenbrenerová, Ivana,	80-7044-570-X		Vyd. 1.	Ústí nad Labem : Univerzita JE Purkyně, 2004	Univerzita JE Purkyně,	2004	Patron physical item request	Maršíčková, Zuzana	10219149530006986	2592050318,2592052662,2592052661,2592050319						Pedagogická fakulta - M. Rettigové	H2183a,H2183d,H2183c,H2183b	Kniha						11 - Zaměstnanec	16/11/2021 09:25:48 CET
-Kmeny 90 : městské subkultury a nezávislé společenské proudy v letech 1989-2000 / Vladimír 518 a kolektiv	Rett-depository (KRD5)			Vladimir 518,	978-80-904735-9-1		1. vydání	Praha : BiggBoss ; 2016	BiggBoss ;	2016	Patron physical item request	Maršíčková, Zuzana	10219523300006986	2592170159						Pedagogická fakulta - M. Rettigové	H4185	Kniha						11 - Zaměstnanec	16/11/2021 10:46:33 CET
 
-}
+\process{@@@}
+% \process{Titul	Umístění	Signatura	Přírůstkové číslo holdingu	Autor	ISBN	ISSN	Vydání	Tiráž	Vydavatel	Datum vydání	Typ požadavku	Požadováno pro	ID požadavku	Čárový kód	Popis	Svazek	Vydání	Kapitola/článek	Strany	Místo vyzvednutí	Signatura jednotky	Druh dokumentu	Poznámka k požadavku	Kódy kurzů	ID umístění úložiště	ID žádosti o sdílení dokumentu	Svazek sdílení dokumentů	Skupina uživatelů žadatele	Datum procesu
+% Rámcový vzdělávací program pro základní vzdělávání s přílohou upravující vzdělávání žáků s lehkým mentálním postižením / [celková gesce přípravy dokumentu Jaroslav Jeřábek, Jan Tupý ; autoři jednotlivých částí Jan Balada ... et al.]	Rett-depository (KRD5)			Výzkumný ústav pedagogický v Praze	80-87000-02-1			Praha : Výzkumný ústav pedagogický, 2005	Výzkumný ústav pedagogický,	2005	Patron physical item request	Vrbová, Zuzana	10219150150006986	2592070671,2592070663,2592070664,2592070672						Pedagogická fakulta - M. Rettigové	H2287v,H2287m,H2287n,H2287w	Kniha						11 - Zaměstnanec	16/11/2021 09:26:26 CET
+% Ruský jazyk v kostce : [konverzační témata, reálie] / Radka Hříbková, Antonín Hlaváček	Rett-depository (KRD5)			Hříbková, Radka,	80-7200-893-5		1. vyd.	Havlíčkův Brod : Fragment, 2004	Fragment,	2004	Patron physical item request	Vrbová, Zuzana	10219143660006986	2592042189,2592063228,2592063230,2592063232,2592063231,2592042188						Pedagogická fakulta - M. Rettigové	H2165a,H2165c,H2165e,H2165g,H2165f,H2165	Kniha	do boxu					11 - Zaměstnanec	16/11/2021 09:22:34 CET
+% Historické zahrady v Čechách a na Moravě / Zdeněk Dokoupil ... [et al.]	Rett-depository (KRD5)			Dokoupil, Zdeněk,			1. vyd.	Praha : Nakladatelství československých výtvarných umělců, 1957	Nakladatelství československých výtvarných umělců,	1957	Patron physical item request	Špačková, Kateřina	10219972290006986	2595701920						Pedagogická fakulta - M. Rettigové	H84	Kniha						01 - Student	16/11/2021 12:36:54 CET
+% Kmeny : současné městské subkultury / autoři projektu Vladimir 518, Karel Veselý ; fotografie Tomáš Souček	Rett-depository (KRD5)			Vladimir 518,	978-80-904735-3-9		1. vyd.	V Praze : Bigg Boss & Yinachi, 2011	Bigg Boss & Yinachi,	2011	Patron physical item request	Maršíčková, Zuzana	10219500570006986	2592130113,2592120666						Pedagogická fakulta - M. Rettigové	H3191a,H3191	Kniha						11 - Zaměstnanec	16/11/2021 10:43:29 CET
+% Kmeny 0 : městské subkultury a nezávislé společenské proudy před rokem 1989 / Vladimir 518 a kolektiv	Rett-depository (KRD5)			Vladimir 518,	978-80-904735-4-6		1. vydání	V Praze : Bigg Boss & Yinachi, 2013	Bigg Boss & Yinachi,	2013	Patron physical item request	Maršíčková, Zuzana	10219502900006986	2592145282,2592141609						Pedagogická fakulta - M. Rettigové	H3651a,H3651	Kniha						11 - Zaměstnanec	16/11/2021 10:43:57 CET
+% Opera pro děti / Ivana Ašenbrenerová	Rett-depository (KRD5)			Ašenbrenerová, Ivana,	80-7044-570-X		Vyd. 1.	Ústí nad Labem : Univerzita JE Purkyně, 2004	Univerzita JE Purkyně,	2004	Patron physical item request	Hoftich, Michal	10219148470006986	2592050318,2592052662,2592052661,2592050319						Pedagogická fakulta - M. Rettigové	H2183a,H2183d,H2183c,H2183b	Kniha						11 - Zaměstnanec	16/11/2021 09:25:22 CET
+% Opera pro děti / Ivana Ašenbrenerová	Rett-depository (KRD5)			Ašenbrenerová, Ivana,	80-7044-570-X		Vyd. 1.	Ústí nad Labem : Univerzita JE Purkyně, 2004	Univerzita JE Purkyně,	2004	Patron physical item request	Maršíčková, Zuzana	10219149530006986	2592050318,2592052662,2592052661,2592050319						Pedagogická fakulta - M. Rettigové	H2183a,H2183d,H2183c,H2183b	Kniha						11 - Zaměstnanec	16/11/2021 09:25:48 CET
+% Kmeny 90 : městské subkultury a nezávislé společenské proudy v letech 1989-2000 / Vladimír 518 a kolektiv	Rett-depository (KRD5)			Vladimir 518,	978-80-904735-9-1		1. vydání	Praha : BiggBoss ; 2016	BiggBoss ;	2016	Patron physical item request	Maršíčková, Zuzana	10219523300006986	2592170159						Pedagogická fakulta - M. Rettigové	H4185	Kniha						11 - Zaměstnanec	16/11/2021 10:46:33 CET
+
+% }
 \endgroup
 
 
