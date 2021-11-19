@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>LaTeX CGI tests</title>
+    <meta charset="UTF-8">
+    <style type="text/css" media="screen">
+      img{
+        max-width:100%;
+        width: auto;
+      }
+      figcaption{
+        text-align: center;
+        font-weight: bold;
+        margin: 1em;
+
+      }
+      textarea{
+        display:block;
+      }
+      
+    </style>
+    <!-- <script src="https://www.learnlatex.org/assets/scripts/runlatex.js"></script> -->
+    <style>
+      body {margin:auto; max-width: 70em;}
+      div.h {background-color: #F5F5FF;margin: .5em 0;}
+      pre {background-color: #EEE;margin:0;padding: .5em;}
+    </style>
+    
+  </head>
+  <body>
+    <form style="display:none">
+      <textarea id="template">{{template}}</textarea>
+    </form>
+    <h1>Generování rezervačních lístků</h1>
+    <p>Do tohoto formuláře zkopírujte obsah excelovského  </p>
+    <form id="input" name="input">
+      <textarea rows="20" cols="95" id="json"></textarea>
+      <input type="submit" value="Vytvořit PDF" />
+    </form>
+
+    <h1 id="navod">Návod na export z Woocommerce</h1>
+    <p>V administračním rozhraní Wordpressu vyberte menu <samp>WooCommerce -&gt; Export Orders</samp>. Zde zvolte následující možnosti:</p>
+    <ul>
+      <li>Format: JSON</li>
+      <li>Order statuses: odstraňte <q>Dokončeno</q></li>
+    </ul>
+    <figure>
+      <figcaption>Rozhraní exportu</figcaption>
+      <img src="woocommerce-export.png" alt="rozhraní exportu z Woocommerce" />
+    </figure>
+    <p>Export provedete zvolením tlačítka <q>Preview</q>. Zobrazí se textové pole s
+    kódem jako na následujícím obrázku. Ten zkopírujte a vložte do <a href="#input">textového
+      pole na této stránce</a>. Stiskněte tlačítko <q>Vytvořit PDF</q> a zobrazí se
+    vygenerované objednávkové lístky.</p>
+    <p>Pokud je objednávek víc, než 5, je třeba zvolit správnou velikost <b>Preview size</b>.</p>
+    <figure>
+      <figcaption>JSON kód ke zkopírování</figcaption>
+      <img src="woocommerce-json.png" alt="Vyexportovaný JSON">
+    </figure>
+    <!-- formulář užívaný pro kompilaci do PDF -->
+    <form style="display:none" id="form2-pre" 
+      name="form2-pre" enctype="multipart/form-data" 
+      action="https://texlive.net/cgi-bin/latexcgi" method="post" target="_blank">
+    </form>
+
+  </body>
+<script type="text/javascript">
+
+// modified version of https://stackoverflow.com/a/20392392/2467963
+function validate_json (jsonString){
+    try {
+        var o = JSON.parse(jsonString);
+        if (o && typeof o === "object") {
+            return true;
+        }
+    }
+    catch (e) { }
+    return false;
+};
+
+function addinputnoenc(f,n,v) {
+    var inp=document.createElement("input");
+    inp.setAttribute("type","text");
+    inp.setAttribute("name",n);
+    inp.value =v;
+    f.appendChild(inp);
+}
+
+function compile_latex(code){
+    // we must create text area, fill it with 
+    // latex code and add more form fields 
+    // expected by texlive.net
+    var f = document.getElementById("form2-pre");
+    var inp=document.createElement("textarea");
+    inp.setAttribute("type","text");
+    inp.setAttribute("name","filecontents[]");
+    inp.textContent=code;
+    f.appendChild(inp);
+    addinputnoenc(f,"filename[]","document.tex");
+    addinputnoenc(f,"engine", "lualatex");
+    addinputnoenc(f,"return", "pdf");
+    console.log(f);
+    f.submit();
+}
+
+
+function form_submit(){
+    // get LaTeX template from the hidden <textarea>
+    let template = document.getElementById("template").value;
+    // get pasted JSON data
+    let json = document.getElementById("json").value;
+    // if(validate_json(json)){
+    let filled = template.replace("@@@", json);
+    console.log(filled);
+    compile_latex(filled)
+    // } else {
+    //     alert("Chyba: vadný vstup");
+    // }
+}
+document.getElementById("input").addEventListener('submit', form_submit);
+</script> 
+</html>
