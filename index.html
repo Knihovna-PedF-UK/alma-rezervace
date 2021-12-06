@@ -141,10 +141,14 @@ local function firstcallno(text)
   return first
 end
 
+local function escape(s)
+  return s:gsub("&amp;", "\\&amp;"):gsub("%%", "\\%"):gsub("%$", "\\$")
+end
+
 local function processrequest(newrecord, rec)
   local request = {}
   -- get only short title, to fit on paper
-  request.title     = shorten(rec[title], 25)
+  request.title     = escape(shorten(rec[title], 25))
   -- there are multiple call numbers separated by comma, use just first one
   request.callno    = firstcallno(rec[callno])
   request.time      = rec[requesttime]
