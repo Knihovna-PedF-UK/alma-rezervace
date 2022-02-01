@@ -97,6 +97,8 @@ function form_submit(){
     let template = document.getElementById("template").value;
     // get pasted JSON data
     let json = document.getElementById("json").value;
+    // ]] will be interpreted as end of string in Lua template
+    json = json.replace("]]", "] ]").replace("[[", "[ [");
     // if(validate_json(json)){
     let filled = template.replace("@@@", json);
     console.log(filled);
