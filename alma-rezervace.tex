@@ -107,7 +107,7 @@ end
 
 local function firstcallno(text)
   local first = text:match("^([^%,]+)")
-  return first
+  return first or ""
 end
 
 local function escape(s)
