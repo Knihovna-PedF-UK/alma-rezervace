@@ -214,9 +214,13 @@ local function sortrequests(rec)
   local sigb = b.callno or ""
    -- signatura může být 2H222, nebo F12222
    local pattern = "(2?%a+)(.+)"
-   local starta, resta = siga:match(pattern)
+   local starta, resta = siga:match(pattern) 
    local startb, restb = sigb:match(pattern)
+   starta = starta or ""
+   startb = startb or ""
    if starta==startb then
+     resta = resta or ""
+     restb = restb or ""
      -- compare numbers if starting letters are same
      return resta &lt; restb 
    end
