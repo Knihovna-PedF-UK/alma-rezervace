@@ -142,7 +142,7 @@ local function firstcallno(text)
 end
 
 local function escape(s)
-  return s:gsub("&amp;", "\\&amp;"):gsub("%%", "\\%"):gsub("%$", "\\$")
+  return s:gsub("&amp;", "\\&amp;"):gsub("%%", "\\%"):gsub("%$", "\\$"):gsub("'", "\\'")
 end
 
 local function processrequest(newrecord, rec)
